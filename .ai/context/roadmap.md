@@ -13,7 +13,9 @@
 - [x] Schemas, CRUD y endpoints `/api/v1/facturas`.
 - [ ] Autenticación (login + JWT) y usar el usuario autenticado en la auditoría.
 - [ ] Migraciones con Alembic.
-- [ ] Frontend. Crear un frontend Rect sobre la carpeta "frontend/"
+- [x] Frontend. Crear un frontend React sobre la carpeta "frontend/" (sin build, puerto 9988).
+- [x] Secciones Clientes y Facturas con listado y CRUD.
+- [x] CORS en la API y arranque del frontend desde `start.bat`.
 
 ## Fase 3: Pruebas y Despliegue
 - [x] Pruebas de integración de la API (pytest).

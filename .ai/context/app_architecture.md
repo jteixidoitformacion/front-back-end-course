@@ -73,5 +73,28 @@ Ver [ADR-0002](../docs/decissions/ADR-0002-tabla-facturas.md). Expuesta en `/api
 | PATCH | `/facturas/{id}` | Actualización parcial (recalcula total) |
 | DELETE | `/facturas/{id}` | Borrado lógico (204) |
 
+La API habilita **CORS** (`CORSMiddleware` en `main.py`) para los orígenes de `CORS_ORIGINS` (por defecto el frontend en `:9988`).
+
 ## 3. Flujo de Datos y Negocio
 `Request → Router (valida con Schema, inyecta Session + usuario X-User) → CRUD (reglas + auditoría) → SQLAlchemy → SQLite → Modelo → ClienteRead → Response`
+
+## 4. Frontend (`frontend/`)
+SPA en **React 18 + htm** sin compilación (ES modules desde `esm.sh` vía `importmap`). Ver [ADR-0003](../docs/decissions/ADR-0003-frontend-react-sin-build.md). Servida en **http://127.0.0.1:9988** por `serve.py`; consume la API en `http://<host>:9989/api/v1`.
+
+```
+frontend/
+├── index.html               # importmap (react, react-dom/client, htm) + carga js/main.js
+├── serve.py                 # Servidor estático stdlib, puerto 9988 (FRONTEND_PORT), MIME .js correcto, no-store
+├── css/styles.css           # Tema minimalista verde (variables CSS), responsive
+└── js/
+    ├── config.js            # API_URL (host actual :9989), AUDIT_USER (cabecera X-User)
+    ├── api.js               # fetch genérico + clientesApi / facturasApi (list/get/create/update/remove)
+    ├── lib.js               # html (htm+React), hooks, formateadores (EUR, fechas)
+    ├── main.js / App.js     # Montaje, layout con sidebar, routing por hash (#/clientes, #/facturas)
+    ├── components/          # Modal + ConfirmDialog, Toast (contexto), ui (PageHeader, Estado, Field)
+    └── pages/
+        ├── ClientesPage.js  # Listado + búsqueda local, alta/edición (password opcional al editar), borrado
+        └── FacturasPage.js  # Listado + filtro por cliente, totales, alta/edición con cálculo IVA (21/10/4/0 %), borrado
+```
+
+Flujo: `Página → api.js (fetch + X-User) → FastAPI /api/v1 → respuesta JSON → estado React`. Los errores de la API (`detail`) se muestran en el formulario o como toast. Importes se envían como string con 2 decimales.

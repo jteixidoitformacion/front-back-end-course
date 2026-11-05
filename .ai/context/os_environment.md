@@ -13,6 +13,12 @@
 | `APP_NAME` | `API Gestión de Clientes` | Título de la API |
 | `DATABASE_URL` | `sqlite:///./clientes.db` | Cadena de conexión SQLAlchemy |
 | `DEFAULT_AUDIT_USER` | `system` | Usuario de auditoría si no llega cabecera `X-User` |
+| `CORS_ORIGINS` | `http://127.0.0.1:9988,http://localhost:9988` | Orígenes permitidos (separados por comas) |
+| `FRONTEND_PORT` | `9988` | Puerto de `frontend/serve.py` (lo fija `start.bat`) |
+
+## Frontend
+- Sin Node ni build: React 18 + htm se cargan desde `https://esm.sh` (requiere Internet y navegador moderno con soporte de `importmap`).
+- Se sirve con el Python del venv del backend: `backend\.venv\Scripts\python frontend\serve.py` → http://127.0.0.1:9988.
 
 ## 3. Comandos (PowerShell, desde `backend/`)
 ```powershell
@@ -23,4 +29,4 @@ python -m venv .venv
 ```
 
 ## 4. Scripts de arranque (`.scripts/`)
-- `.scripts\start.bat`: arranca FastAPI (uvicorn `--reload`) siempre en **http://127.0.0.1:9989** (`/docs` para Swagger). Crea `.venv` e instala dependencias si no existe y carga `backend\.env` si está presente. Se puede lanzar desde cualquier directorio.
+- `.scripts\start.bat`: arranca el **frontend** en **http://127.0.0.1:9988** (ventana aparte, `frontend\serve.py`) y FastAPI (uvicorn `--reload`) siempre en **http://127.0.0.1:9989** (`/docs` para Swagger). Crea `.venv` e instala dependencias si no existe y carga `backend\.env` si está presente. Se puede lanzar desde cualquier directorio.
