@@ -10,6 +10,9 @@ Añadir la tabla `facturas` (id, fecha, base, iva, total, cliente_id, auditoría
 - `backend/tests/test_facturas.py`: columnas, alta, FK inválida y total incoherente.
 - Documentación: arquitectura, roadmap, task board, ADR-0002.
 
+## Seguimiento: endpoints (facturas no aparecía en /docs)
+Swagger solo muestra rutas, no tablas. Se añadieron `schemas/factura.py`, `crud/factura.py`, `api/routes/facturas.py` y el registro del router en `main.py`, junto con tests de API en `tests/test_facturas.py`.
+
 ## Verificación
 `.\.venv\Scripts\python -m pytest -q` → 11 passed.
 

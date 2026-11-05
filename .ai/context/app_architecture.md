@@ -15,11 +15,11 @@ backend/
 │   │   ├── audit.py         # AuditMixin (created/updated/deleted _at/_by)
 │   │   ├── cliente.py       # Modelo Cliente (tabla clientes)
 │   │   └── factura.py       # Modelo Factura (tabla facturas, FK a clientes)
-│   ├── schemas/cliente.py   # ClienteCreate / ClienteUpdate / ClienteRead
-│   ├── crud/cliente.py      # Acceso a datos y reglas (email único, soft delete)
+│   ├── schemas/             # cliente.py, factura.py (Create / Update / Read)
+│   ├── crud/                # cliente.py (email único, soft delete), factura.py (total en servidor)
 │   └── api/
 │       ├── deps.py          # DbSession, UsuarioAuditoria (cabecera X-User)
-│       └── routes/clientes.py
+│       └── routes/          # clientes.py, facturas.py
 ├── tests/                   # pytest + TestClient (BD test_clientes.db)
 ├── requirements.txt
 ├── pytest.ini
@@ -46,7 +46,7 @@ backend/
 | deleted_at / deleted_by | DATETIME / VARCHAR(100) | borrado lógico (NULL = activo) |
 
 ### Entidad `facturas`
-Ver [ADR-0002](../docs/decissions/ADR-0002-tabla-facturas.md). Por ahora solo modelo/tabla (sin schemas, CRUD ni endpoints).
+Ver [ADR-0002](../docs/decissions/ADR-0002-tabla-facturas.md). Expuesta en `/api/v1/facturas` (schemas en `schemas/factura.py`, CRUD en `crud/factura.py`, router en `api/routes/facturas.py`). El **total lo calcula el servidor** (`base + iva`); si el cliente lo envía, se ignora.
 
 | Campo | Tipo | Notas |
 |---|---|---|
@@ -67,6 +67,11 @@ Ver [ADR-0002](../docs/decissions/ADR-0002-tabla-facturas.md). Por ahora solo mo
 | POST | `/clientes` | Crear (201, 409 si email existe) |
 | PATCH | `/clientes/{id}` | Actualización parcial |
 | DELETE | `/clientes/{id}` | Borrado lógico (204) |
+| GET | `/facturas?skip&limit&cliente_id` | Listar activas (filtro opcional por cliente) |
+| GET | `/facturas/{id}` | Obtener |
+| POST | `/facturas` | Crear (201; 422 si el cliente no existe o está borrado) |
+| PATCH | `/facturas/{id}` | Actualización parcial (recalcula total) |
+| DELETE | `/facturas/{id}` | Borrado lógico (204) |
 
 ## 3. Flujo de Datos y Negocio
 `Request → Router (valida con Schema, inyecta Session + usuario X-User) → CRUD (reglas + auditoría) → SQLAlchemy → SQLite → Modelo → ClienteRead → Response`

@@ -24,3 +24,7 @@ El agente **NO debe considerar finalizada ninguna solicitud** sin haber actualiz
 ## 3. Principios de Operación
 - Trabajar de forma iterativa y verificar cambios tras cada modificación.
 - Proponer un mensaje de commit en español siguiendo el formato Conventional Commits al finalizar.
+
+## 4. Comunicación con el Usuario
+- El usuario se llama **Jordi**; dirígete a él por su nombre.
+- Responde **siempre en castellano**, incluidos los mensajes de progreso y los resúmenes.

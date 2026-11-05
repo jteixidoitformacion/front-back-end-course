@@ -17,4 +17,5 @@ Se necesita registrar facturas (id, fecha, base, iva, total, cliente_id, auditor
 
 ## Consecuencias
 - Integridad referencial real en SQLite.
-- Pendiente: schemas, CRUD y endpoints, donde convendrá calcular `total` en servidor.
+- API `/api/v1/facturas`: el **total se calcula en el servidor** (`base + iva`) al crear y actualizar; el campo `total` enviado por el cliente se ignora. Una factura solo puede asociarse a un cliente activo (si no, 422).
+- Los importes se serializan en JSON como cadenas decimales (`"121.12"`), comportamiento estándar de Pydantic v2 para `Decimal`, para no perder precisión.

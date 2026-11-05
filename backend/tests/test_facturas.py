@@ -52,3 +52,64 @@ def test_factura_total_incoherente(client):
                        total=Decimal("15"), cliente_id=c.id, **AUDIT))
         with pytest.raises(IntegrityError):
             db.commit()
+
+
+URL = "/api/v1/facturas"
+CLIENTE = {"nombre": "Ana", "email": "ana@example.com", "password": "secreta123"}
+
+
+def _crear_cliente_api(client, email="ana@example.com") -> int:
+    return client.post("/api/v1/clientes", json={**CLIENTE, "email": email}).json()["id"]
+
+
+def _nueva(cliente_id: int) -> dict:
+    return {"fecha": "2026-11-05", "base": "100.10", "iva": "21.02", "cliente_id": cliente_id}
+
+
+def test_api_crear_y_obtener_factura(client):
+    cid = _crear_cliente_api(client)
+    r = client.post(URL, json=_nueva(cid), headers={"X-User": "admin"})
+    assert r.status_code == 201
+    body = r.json()
+    assert Decimal(body["total"]) == Decimal("121.12")
+    assert body["created_by"] == "admin"
+    assert client.get(f"{URL}/{body['id']}").status_code == 200
+
+
+def test_api_total_lo_calcula_el_servidor(client):
+    cid = _crear_cliente_api(client)
+    r = client.post(URL, json={**_nueva(cid), "total": "999"})
+    assert Decimal(r.json()["total"]) == Decimal("121.12")
+
+
+def test_api_cliente_inexistente_y_validaciones(client):
+    assert client.post(URL, json=_nueva(999)).status_code == 422
+    cid = _crear_cliente_api(client)
+    assert client.post(URL, json={**_nueva(cid), "base": "-1"}).status_code == 422
+    assert client.post(URL, json={**_nueva(cid), "iva": "1.234"}).status_code == 422
+
+
+def test_api_actualizar_recalcula_total(client):
+    cid = _crear_cliente_api(client)
+    creada = client.post(URL, json=_nueva(cid), headers={"X-User": "admin"}).json()
+    r = client.patch(f"{URL}/{creada['id']}", json={"base": "200"}, headers={"X-User": "editor"})
+    assert r.status_code == 200
+    body = r.json()
+    assert Decimal(body["total"]) == Decimal("221.02")
+    assert body["created_by"] == "admin" and body["updated_by"] == "editor"
+
+
+def test_api_listar_filtrar_y_soft_delete(client):
+    c1 = _crear_cliente_api(client)
+    c2 = _crear_cliente_api(client, "otro@example.com")
+    f1 = client.post(URL, json=_nueva(c1)).json()["id"]
+    client.post(URL, json=_nueva(c2))
+    assert len(client.get(URL).json()) == 2
+    assert len(client.get(URL, params={"cliente_id": c1}).json()) == 1
+
+    assert client.delete(f"{URL}/{f1}", headers={"X-User": "admin"}).status_code == 204
+    assert client.get(f"{URL}/{f1}").status_code == 404
+    assert len(client.get(URL).json()) == 1
+    with Session(engine) as db:
+        factura = db.get(Factura, f1)
+        assert factura.deleted_at is not None and factura.deleted_by == "admin"
