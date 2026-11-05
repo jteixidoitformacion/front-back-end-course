@@ -1,0 +1,25 @@
+@echo off
+setlocal
+
+set "PORT=9989"
+set "HOST=127.0.0.1"
+set "BACKEND_DIR=%~dp0..\backend"
+
+cd /d "%BACKEND_DIR%" || (
+    echo [ERROR] No se encuentra la carpeta backend: %BACKEND_DIR%
+    exit /b 1
+)
+
+if not exist ".venv\Scripts\python.exe" (
+    echo [INFO] Creando entorno virtual...
+    python -m venv .venv || exit /b 1
+    ".venv\Scripts\python.exe" -m pip install -r requirements.txt || exit /b 1
+)
+
+set "ENV_ARG="
+if exist ".env" set "ENV_ARG=--env-file .env"
+
+echo [INFO] Iniciando FastAPI en http://%HOST%:%PORT%  (Swagger: http://%HOST%:%PORT%/docs)
+".venv\Scripts\python.exe" -m uvicorn app.main:app --host %HOST% --port %PORT% --reload %ENV_ARG%
+
+endlocal

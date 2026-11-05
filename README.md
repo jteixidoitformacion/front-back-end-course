@@ -27,3 +27,5 @@ python -m venv .venv
 .\.venv\Scripts\python -m pytest -q                       # tests
 ```
 
+Atajo en Windows: `.scripts\start.bat` arranca la API en http://127.0.0.1:9989 (Swagger: `/docs`).
+

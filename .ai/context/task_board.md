@@ -18,3 +18,4 @@
 - [x] Hash PBKDF2-SHA256 de contraseñas.
 - [x] Tests de integración con pytest.
 - [x] Documentación `.ai/` (arquitectura, entorno, ADR-0001, ejemplos, sesión).
+- [x] Script `.scripts/start.bat` para arrancar FastAPI en el puerto fijo 9989.

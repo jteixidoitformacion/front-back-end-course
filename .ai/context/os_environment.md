@@ -21,3 +21,6 @@ python -m venv .venv
 .\.venv\Scripts\python -m uvicorn app.main:app --reload --env-file .env   # http://127.0.0.1:8000/docs
 .\.venv\Scripts\python -m pytest -q
 ```
+
+## 4. Scripts de arranque (`.scripts/`)
+- `.scripts\start.bat`: arranca FastAPI (uvicorn `--reload`) siempre en **http://127.0.0.1:9989** (`/docs` para Swagger). Crea `.venv` e instala dependencias si no existe y carga `backend\.env` si está presente. Se puede lanzar desde cualquier directorio.
