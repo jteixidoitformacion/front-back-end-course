@@ -1,0 +1,8 @@
+fastapi>=0.115
+uvicorn[standard]>=0.30
+# Versiones acotadas: Smart App Control de Windows bloquea las DLL de releases muy recientes
+# (pydantic-core 2.50.x, sqlalchemy 2.1.x). Ver .ai/context/os_environment.md
+sqlalchemy>=2.0.44,<2.1
+pydantic[email]==2.12.5
+pytest>=8.0
+httpx>=0.27
