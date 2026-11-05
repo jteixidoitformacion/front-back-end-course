@@ -5,6 +5,7 @@
 - [ ] Autenticación JWT (sustituir cabecera `X-User`).
 - [ ] Migraciones Alembic.
 - [ ] Búsqueda/filtrado de clientes (nombre, email).
+- [ ] Schemas/CRUD/endpoints de facturas (cálculo de IVA y total en servidor).
 - [ ] Frontend.
 
 ## En Progreso (In Progress)
@@ -19,3 +20,5 @@
 - [x] Tests de integración con pytest.
 - [x] Documentación `.ai/` (arquitectura, entorno, ADR-0001, ejemplos, sesión).
 - [x] Script `.scripts/start.bat` para arrancar FastAPI en el puerto fijo 9989.
+- [x] Tabla `facturas` (id, fecha, base, iva, total, cliente_id + auditoría) y activación de FKs en SQLite.
+- [x] Tests del modelo `Factura` (`tests/test_facturas.py`).

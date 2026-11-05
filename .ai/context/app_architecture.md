@@ -10,10 +10,11 @@ backend/
 │   ├── core/
 │   │   ├── config.py        # Configuración vía variables de entorno
 │   │   └── security.py      # hash_password / verify_password (PBKDF2-SHA256)
-│   ├── db/database.py       # engine, SessionLocal, Base, get_db
+│   ├── db/database.py       # engine (PRAGMA foreign_keys=ON en SQLite), SessionLocal, Base, get_db
 │   ├── models/
 │   │   ├── audit.py         # AuditMixin (created/updated/deleted _at/_by)
-│   │   └── cliente.py       # Modelo Cliente (tabla clientes)
+│   │   ├── cliente.py       # Modelo Cliente (tabla clientes)
+│   │   └── factura.py       # Modelo Factura (tabla facturas, FK a clientes)
 │   ├── schemas/cliente.py   # ClienteCreate / ClienteUpdate / ClienteRead
 │   ├── crud/cliente.py      # Acceso a datos y reglas (email único, soft delete)
 │   └── api/
@@ -43,6 +44,19 @@ backend/
 | created_at / created_by | DATETIME / VARCHAR(100) | auditoría alta |
 | updated_at / updated_by | DATETIME / VARCHAR(100) | auditoría modificación |
 | deleted_at / deleted_by | DATETIME / VARCHAR(100) | borrado lógico (NULL = activo) |
+
+### Entidad `facturas`
+Ver [ADR-0002](../docs/decissions/ADR-0002-tabla-facturas.md). Por ahora solo modelo/tabla (sin schemas, CRUD ni endpoints).
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| id | INTEGER PK | autoincremental |
+| fecha | DATE | obligatorio |
+| base | NUMERIC(12,2) | obligatorio, `>= 0` (`ck_facturas_base_no_negativa`) |
+| iva | NUMERIC(12,2) | importe del IVA, obligatorio, `>= 0` (`ck_facturas_iva_no_negativo`) |
+| total | NUMERIC(12,2) | obligatorio, `total = base + iva` con tolerancia 0,005 (`ck_facturas_total`) |
+| cliente_id | INTEGER FK → `clientes.id` | obligatorio, indexado, `ON DELETE RESTRICT` |
+| created_at/by, updated_at/by, deleted_at/by | — | auditoría vía `AuditMixin` (soft delete) |
 
 ### Endpoints (`/api/v1`)
 | Método | Ruta | Descripción |

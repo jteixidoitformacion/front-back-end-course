@@ -9,6 +9,8 @@
 - [x] Modelo `Cliente` con campos de auditoría y soft delete.
 - [x] CRUD REST `/api/v1/clientes`.
 - [x] Hash seguro de contraseñas.
+- [x] Modelo `Factura` (tabla `facturas`) con auditoría y FK a clientes.
+- [ ] Schemas, CRUD y endpoints `/api/v1/facturas`.
 - [ ] Autenticación (login + JWT) y usar el usuario autenticado en la auditoría.
 - [ ] Migraciones con Alembic.
 - [ ] Frontend. Crear un frontend Rect sobre la carpeta "frontend/"
